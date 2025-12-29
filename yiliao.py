@@ -62,7 +62,7 @@ elif page == "预测医疗费用":
         with col2:
             children = st.number_input("子女数量", min_value=0, max_value=10, value=0)
             smoker = st.radio("是否吸烟", ["是", "否"], index=1)
-            region = st.selectbox("区域", ["东部", "西部", "南部", "北部"], index=0)
+            region = st.selectbox("区域", ["东北部", "东南部", "西北部", "西南部"], index=0)
         
         submit_button = st.form_submit_button("预测费用")
     
@@ -80,24 +80,31 @@ elif page == "预测医疗费用":
         
         df = pd.DataFrame(input_data)
         
-        # 数据预处理
+        # 读取真实数据并训练模型
+        # 使用GBK编码读取CSV文件
+        data = pd.read_csv('（医疗费用预测数据）insurance-chinese.csv', encoding='gbk')
+        
+        # 对分类变量进行编码
         le_sex = LabelEncoder()
         le_smoker = LabelEncoder()
         le_region = LabelEncoder()
         
-        df['sex'] = le_sex.fit_transform(df['sex'])
-        df['smoker'] = le_smoker.fit_transform(df['smoker'])
-        df['region'] = le_region.fit_transform(df['region'])
+        data['性别'] = le_sex.fit_transform(data['性别'])
+        data['是否吸烟'] = le_smoker.fit_transform(data['是否吸烟'])
+        data['区域'] = le_region.fit_transform(data['区域'])
         
-        # 创建并训练简单的线性回归模型
-        # 注意：在实际应用中，应该使用预训练的模型
-        # 这里为了演示，我们使用模拟数据来训练模型
-        np.random.seed(42)
-        X_train = np.random.rand(1000, 6)
-        y_train = 1000 + 500*X_train[:,0] + 1000*X_train[:,1] + 200*X_train[:,2] + 500*X_train[:,3] + 5000*X_train[:,4] + 300*X_train[:,5]
+        # 划分特征和目标变量
+        X = data[['年龄', '性别', 'BMI', '子女数量', '是否吸烟', '区域']]
+        y = data['医疗费用']
         
+        # 训练线性回归模型
         model = LinearRegression()
-        model.fit(X_train, y_train)
+        model.fit(X, y)
+        
+        # 对输入数据进行编码
+        df['sex'] = le_sex.transform(df['sex'])
+        df['smoker'] = le_smoker.transform(df['smoker'])
+        df['region'] = le_region.transform(df['region'])
         
         # 进行预测
         prediction = model.predict(df.values)
