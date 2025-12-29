@@ -106,12 +106,28 @@ elif page == "预测医疗费用":
         df['smoker'] = le_smoker.transform(df['smoker'])
         df['region'] = le_region.transform(df['region'])
         
+        # 重命名列名并调整顺序，使其与训练数据一致
+        df = df.rename(columns={
+            'age': '年龄',
+            'sex': '性别',
+            'bmi': 'BMI',
+            'children': '子女数量',
+            'smoker': '是否吸烟',
+            'region': '区域'
+        })
+        
+        # 确保特征顺序与训练数据一致
+        df = df[['年龄', '性别', 'BMI', '子女数量', '是否吸烟', '区域']]
+        
         # 进行预测
-        prediction = model.predict(df.values)
+        prediction = model.predict(df)
+        
+        # 确保预测结果不为负数且不低于合理最小值（数据集中医疗费用的5%分位数）
+        prediction = max(1757.75, prediction[0])
         
         # 显示结果
         st.subheader("预测结果")
-        st.info(f"根据您提供的信息，预测的年度医疗费用为：**¥{prediction[0]:,.2f}**")
+        st.info(f"根据您提供的信息，预测的年度医疗费用为：**¥{prediction:,.2f}**")
         
         st.subheader("费用分析")
         st.write("• 年龄、BMI和吸烟状态是影响医疗费用的主要因素")
