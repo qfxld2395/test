@@ -223,9 +223,9 @@ def main():
             st.subheader("企鹅图片")
             
             penguin_images = {
-                '阿德利企鹅': 'img/阿德利企鹅.png',
-                '巴布亚企鹅': 'img/巴布亚企鹅.png',
-                '帽带企鹅': 'img/帽带企鹅.png'
+                '阿德利企鹅': '阿德利企鹅.png',
+                '巴布亚企鹅': '巴布亚企鹅.png',
+                '帽带企鹅': '帽带企鹅.png'
             }
             
             if predicted_species in penguin_images:
