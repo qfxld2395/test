@@ -35,10 +35,33 @@ df = load_data()
 # 侧边栏导航
 st.sidebar.title('📊 学生成绩分析与预测系统')
 
-# 确保使用深色模式
-os.makedirs('.streamlit', exist_ok=True)
-with open('.streamlit/config.toml', 'w') as f:
+# 确保使用默认深色模式
+# 获取当前工作目录
+current_dir = os.getcwd()
+config_dir = os.path.join(current_dir, '.streamlit')
+config_path = os.path.join(config_dir, 'config.toml')
+
+# 确保.config目录存在
+if not os.path.exists(config_dir):
+    os.makedirs(config_dir, exist_ok=True)
+
+# 写入深色模式配置
+with open(config_path, 'w') as f:
     f.write('[theme]\nbase = "dark"\n')
+
+# 验证配置文件是否正确创建
+if os.path.exists(config_path):
+    with open(config_path, 'r') as f:
+        content = f.read()
+    if 'base = "dark"' in content:
+        print(f"配置文件已创建，主题设置为深色模式: {config_path}")
+    else:
+        print(f"配置文件已创建，但主题设置不正确: {config_path}")
+        print(f"配置内容: {content}")
+else:
+    print(f"无法创建配置文件: {config_path}")
+    print(f"当前工作目录: {current_dir}")
+    print(f"是否有权限创建目录: {os.access(current_dir, os.W_OK)}")
 
 page = st.sidebar.radio(
     '功能模块',
